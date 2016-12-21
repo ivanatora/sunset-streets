@@ -4,9 +4,9 @@ var aSegments = [];
 
 var oTileJson = {
     tiles: [
-        'http://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        'http://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        'http://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
     ],
     minzoom: 0,
     maxzoom: 18,
@@ -16,7 +16,7 @@ var oTileJson = 'mapbox.streets';
 var map = L.map('ctMap', {
     zoomControl: false
 });
-L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png?{foo}', {
+L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png?{foo}', {
     foo: 'bar',
     attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors | <a target="_blank" href="http://www.openstreetmap.org/fixthemap">Improve this map</a>'
 }).addTo(map);
@@ -58,7 +58,7 @@ function findStreets(){
                 '(._;>;);'+
                 'out body;'
     $.ajax({
-        url: 'http://www.overpass-api.de/api/interpreter?data='+sQuery,
+        url: 'https://www.overpass-api.de/api/interpreter?data='+sQuery,
         dataType: 'json',
         crossDomain: true,
         success: function(res){

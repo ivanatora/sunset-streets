@@ -36,8 +36,16 @@ map.on('move', function(e) {
 //} 
 
 map.on('moveend', function(){
-    findStreets();
+    findStreets_buffered();
 })
+
+var timeout = null;
+function findStreets_buffered(){
+    clearTimeout(timeout);
+    timeout = setTimeout(function(){
+        findStreets();
+    }, 1000);
+}
 
 function findStreets(){
     var oPosition = map.getCenter();
@@ -53,7 +61,6 @@ function findStreets(){
         dataType: 'json',
         crossDomain: true,
         success: function(res){
-            console.log('res', res, res.elements.length)
             aNodes = [];
             aWays = [];
             
@@ -99,7 +106,7 @@ function clearLayers(){
                 map.removeLayer(map._layers[i]);
             }
             catch(e) {
-                console.log("problem with " + e + map._layers[i]);
+//                console.log("problem with " + e + map._layers[i]);
             }
         }
     }
@@ -139,14 +146,11 @@ function recalculateSunBearing(){
     var day = $('#formDate input[name="day"]').val();
     
     var date = new Date(year, month, day);
-    console.log(date, year, month, day)
     var dayInfo = SunCalc.getDayInfo(date, oPosition.lat, oPosition.lng);
-    console.log(dayInfo)
     $('#sunrise span').html(dayInfo.sunrise.start);
     $('#sunset span').html(dayInfo.sunset.start);
     
     var sunrisePosition = SunCalc.getSunPosition(dayInfo.sunrise.start, oPosition.lat, oPosition.lng);
-    console.log('sunrisePosition', sunrisePosition)
     sunriseAngle = _toDeg(sunrisePosition.azimuth - Math.PI);
     var sunsetPosition = SunCalc.getSunPosition(dayInfo.sunset.start, oPosition.lat, oPosition.lng);
     sunsetAngle = _toDeg(sunsetPosition.azimuth - Math.PI);

@@ -162,7 +162,6 @@ function recalculateSunBearing(){
     $('#sunset_bearing').html(sunsetAngle);
     
     clearLayers();
-    console.log('go for', sunriseAngle, sunsetAngle)
     markBearing(sunriseAngle, 'blue');
     markBearing(sunsetAngle, 'red');
 }

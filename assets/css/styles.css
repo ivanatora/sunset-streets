@@ -16,3 +16,11 @@ body { margin:0; padding:0; }
     text-align: center;
     z-index: 999;
 }
+
+#sunrise, #sunrise_bearing {
+    color: blue;
+}
+
+#sunset, #sunset_bearing {
+    color: red;
+}

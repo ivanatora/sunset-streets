@@ -12,11 +12,22 @@
     <body>
         <div id='ctMap'></div>
         
-        
+        <div id='formDate'>
+            <form>
+                <input type='text' name='year' placeholder='YYYY' value='2016'/>
+                <input type='text' name='month' placeholder='MM' value='12'/>
+                <input type='text' name='day' placeholder='DD' value='21'/>
+                <button>Set date</button>
+                <div id='sunrise'>Sunrise: <span></span></div>
+                <div id='sunrise_bearing'>Bearing: <span></span></div>
+                <div id='sunset'>Sunset: <span></span></div>
+                <div id='sunset_bearing'>Bearing: <span></span></div>
+            </form>
+        </div>
         
         <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
         <script src='https://code.jquery.com/jquery-3.1.1.min.js'></script>
-        <script src='assets/js/noaa_functions.js'></script>
+        <script src='assets/js/suncalc_functions.js'></script>
         <script src='assets/js/functions.js'></script>
         
         <script src='assets/js/main.js'></script>

@@ -1,6 +1,8 @@
 var aNodes = [];
 var aWays = [];
 var aSegments = [];
+var sunriseAngle = 0;
+var sunsetAngle = 0;
 
 var map = L.map('ctMap', {
     zoomControl: false
@@ -86,23 +88,37 @@ function parseSegments(){
         }
     }
     
-    markBearing(); // @TODO: not here
+//    markBearing(); // @TODO: not here
+    recalculateSunBearing();
 }
 
-function markBearing(){
-    var iTargetBearing = 45;
+function clearLayers(){
+    for(i in map._layers) {
+        if(map._layers[i]._path != undefined) {
+            try {
+                map.removeLayer(map._layers[i]);
+            }
+            catch(e) {
+                console.log("problem with " + e + map._layers[i]);
+            }
+        }
+    }
+}
+
+function markBearing(iTargetBearing, color){
+//    var iTargetBearing = 0;
     var iAllowedDelta = 5;
     for (var i in aSegments){
         var iThisBearing = aSegments[i].bearing;
         
         if (Math.abs(iThisBearing - iTargetBearing) < iAllowedDelta){
-            makeFeature(aSegments[i], 'red');
+            makeFeature(aSegments[i], color);
         }
         
         // check for reverse direction
         iTargetBearing = (iTargetBearing + 180) % 360;
         if (Math.abs(iThisBearing - iTargetBearing) < iAllowedDelta){
-            makeFeature(aSegments[i], 'red');
+            makeFeature(aSegments[i], color);
         }
     }
 }
@@ -115,6 +131,39 @@ function makeFeature(oSegment, color){
     var polyline = L.polyline(latlngs, {color: color}).addTo(map);
 }
 
+function recalculateSunBearing(){
+    var oPosition = map.getCenter();
+    
+    var year = $('#formDate input[name="year"]').val();
+    var month = $('#formDate input[name="month"]').val() - 1;
+    var day = $('#formDate input[name="day"]').val();
+    
+    var date = new Date(year, month, day);
+    console.log(date, year, month, day)
+    var dayInfo = SunCalc.getDayInfo(date, oPosition.lat, oPosition.lng);
+    console.log(dayInfo)
+    $('#sunrise span').html(dayInfo.sunrise.start);
+    $('#sunset span').html(dayInfo.sunset.start);
+    
+    var sunrisePosition = SunCalc.getSunPosition(dayInfo.sunrise.start, oPosition.lat, oPosition.lng);
+    console.log('sunrisePosition', sunrisePosition)
+    sunriseAngle = _toDeg(sunrisePosition.azimuth - Math.PI);
+    var sunsetPosition = SunCalc.getSunPosition(dayInfo.sunset.start, oPosition.lat, oPosition.lng);
+    sunsetAngle = _toDeg(sunsetPosition.azimuth - Math.PI);
+    $('#sunrise_bearing').html(sunriseAngle);
+    $('#sunset_bearing').html(sunsetAngle);
+    
+    clearLayers();
+    markBearing(sunriseAngle, 'blue');
+    markBearing(sunsetAngle, 'red');
+}
+
 $(document).ready(function(){
     findStreets();
+    
+    $('#formDate button').click(function(e){
+        e.preventDefault();
+        
+        recalculateSunBearing();
+    })
 })

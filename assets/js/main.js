@@ -2,22 +2,11 @@ var aNodes = [];
 var aWays = [];
 var aSegments = [];
 
-var oTileJson = {
-    tiles: [
-        '//a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        '//b.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        '//c.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    ],
-    minzoom: 0,
-    maxzoom: 18,
-    zoomControl: false
-};
-var oTileJson = 'mapbox.streets';
 var map = L.map('ctMap', {
     zoomControl: false
 });
-L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png?{foo}', {
-    foo: 'bar',
+L.tileLayer('https://a.tiles.mapbox.com/v3/sztanko.gjp73mna/{z}/{x}/{y}.png', {
+//    foo: 'bar',
     attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors | <a target="_blank" href="http://www.openstreetmap.org/fixthemap">Improve this map</a>'
 }).addTo(map);
 
@@ -113,13 +102,12 @@ function markBearing(){
         // check for reverse direction
         iTargetBearing = (iTargetBearing + 180) % 360;
         if (Math.abs(iThisBearing - iTargetBearing) < iAllowedDelta){
-            makeFeature(aSegments[i], 'green');
+            makeFeature(aSegments[i], 'red');
         }
     }
 }
 
 function makeFeature(oSegment, color){
-    console.log('making feature on', oSegment)
     var latlngs = [
         [oSegment.from.lat, oSegment.from.lon],
         [oSegment.to.lat, oSegment.to.lon]

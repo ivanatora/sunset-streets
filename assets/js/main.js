@@ -4,9 +4,9 @@ var aSegments = [];
 
 var oTileJson = {
     tiles: [
-        'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        '//a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        '//b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        '//c.tile.openstreetmap.org/{z}/{x}/{y}.png',
     ],
     minzoom: 0,
     maxzoom: 18,
@@ -26,7 +26,7 @@ map.setView([42.13, 24.75], 13);
 
 // Add in a crosshair for the map
 var crosshairIcon = L.icon({
-    iconUrl: '/assets/images/cross.png',
+    iconUrl: 'assets/images/cross.png',
     iconSize:     [20, 20], // size of the icon
     iconAnchor:   [10, 10], // point of the icon which will correspond to marker's location
 });
@@ -58,7 +58,7 @@ function findStreets(){
                 '(._;>;);'+
                 'out body;'
     $.ajax({
-        url: 'https://www.overpass-api.de/api/interpreter?data='+sQuery,
+        url: 'https://overpass-api.de/api/interpreter?data='+sQuery,
         dataType: 'json',
         crossDomain: true,
         success: function(res){

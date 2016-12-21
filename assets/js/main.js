@@ -1,5 +1,6 @@
 var aNodes = [];
 var aWays = [];
+var aSegments = [];
 
 var oTileJson = {
     tiles: [
@@ -20,7 +21,23 @@ L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png?{foo}', {
     attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors | <a target="_blank" href="http://www.openstreetmap.org/fixthemap">Improve this map</a>'
 }).addTo(map);
 
-map.setView([43, 24], 13);
+
+map.setView([42.13, 24.75], 13);
+
+// Add in a crosshair for the map
+var crosshairIcon = L.icon({
+    iconUrl: '/assets/images/cross.png',
+    iconSize:     [20, 20], // size of the icon
+    iconAnchor:   [10, 10], // point of the icon which will correspond to marker's location
+});
+crosshair = new L.marker(map.getCenter(), {icon: crosshairIcon, clickable:false});
+crosshair.addTo(map);
+
+// Move the crosshair to the center of the map when the user pans
+map.on('move', function(e) {
+    crosshair.setLatLng(map.getCenter());
+});
+
 //if (navigator.geolocation) { // not working?
 //    navigator.geolocation.getCurrentPosition(function(position){
 //        map.setView([position.coords.latitude, position.coords.longitude], 13);
@@ -45,11 +62,12 @@ function findStreets(){
         dataType: 'json',
         crossDomain: true,
         success: function(res){
+            console.log('res', res, res.elements.length)
             aNodes = [];
             aWays = [];
             
-            for (var i in res){
-                var item = res[i];
+            for (var i in res.elements){
+                var item = res.elements[i];
                 if (item.type == 'node'){
                     aNodes[item.id] = item;
                 }
@@ -57,10 +75,58 @@ function findStreets(){
                     aWays[item.id] = item;
                 }
             }
+
+            parseSegments();
         }
     })
 }
 
-$(document).ready(function(){
+function parseSegments(){
+    aSegments = [];
+    for (var i in aWays){
+        var oSegment = {};
+        for (var j = 1; j < aWays[i].nodes.length; j++){
+            var idxFrom = aWays[i].nodes[j-1];
+            var idxTo = aWays[i].nodes[j];
+            oSegment.from_idx = idxFrom;
+            oSegment.to_idx = idxTo;
+            oSegment.from = aNodes[idxFrom];
+            oSegment.to = aNodes[idxTo];
+            oSegment.bearing = bearing(oSegment.from.lat, oSegment.from.lon, oSegment.to.lat, oSegment.to.lon);
+            aSegments.push(oSegment)
+        }
+    }
     
+    markBearing(); // @TODO: not here
+}
+
+function markBearing(){
+    var iTargetBearing = 45;
+    var iAllowedDelta = 5;
+    for (var i in aSegments){
+        var iThisBearing = aSegments[i].bearing;
+        
+        if (Math.abs(iThisBearing - iTargetBearing) < iAllowedDelta){
+            makeFeature(aSegments[i], 'red');
+        }
+        
+        // check for reverse direction
+        iTargetBearing = (iTargetBearing + 180) % 360;
+        if (Math.abs(iThisBearing - iTargetBearing) < iAllowedDelta){
+            makeFeature(aSegments[i], 'green');
+        }
+    }
+}
+
+function makeFeature(oSegment, color){
+    console.log('making feature on', oSegment)
+    var latlngs = [
+        [oSegment.from.lat, oSegment.from.lon],
+        [oSegment.to.lat, oSegment.to.lon]
+    ]
+    var polyline = L.polyline(latlngs, {color: color}).addTo(map);
+}
+
+$(document).ready(function(){
+    findStreets();
 })

@@ -51,6 +51,7 @@ function findStreets_buffered(){
 function findStreets(){
     var oPosition = map.getCenter();
     
+    $('#loading').show();
     var sQuery = '[out:json][timeout:25];'+
                 '('+
                   'way["highway"](around: 1000, '+oPosition.lat+', '+oPosition.lng+' ); '+
@@ -62,6 +63,7 @@ function findStreets(){
         dataType: 'json',
         crossDomain: true,
         success: function(res){
+            $('#loading').hide();
             aNodes = [];
             aWays = [];
             

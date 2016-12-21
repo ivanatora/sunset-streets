@@ -14,6 +14,7 @@ L.tileLayer('https://a.tiles.mapbox.com/v3/sztanko.gjp73mna/{z}/{x}/{y}.png', {
 
 
 map.setView([42.13, 24.75], 13);
+//map.setView([42.67369, 23.28940], 13);
 
 // Add in a crosshair for the map
 var crosshairIcon = L.icon({
@@ -82,8 +83,8 @@ function findStreets(){
 function parseSegments(){
     aSegments = [];
     for (var i in aWays){
-        var oSegment = {};
         for (var j = 1; j < aWays[i].nodes.length; j++){
+            var oSegment = {};
             var idxFrom = aWays[i].nodes[j-1];
             var idxTo = aWays[i].nodes[j];
             oSegment.from_idx = idxFrom;
@@ -95,7 +96,6 @@ function parseSegments(){
         }
     }
     
-//    markBearing(); // @TODO: not here
     recalculateSunBearing();
 }
 
@@ -118,13 +118,15 @@ function markBearing(iTargetBearing, color){
     for (var i in aSegments){
         var iThisBearing = aSegments[i].bearing;
         
-        if (Math.abs(iThisBearing - iTargetBearing) < iAllowedDelta){
+        var fits = Math.abs(iThisBearing - iTargetBearing);
+        if (fits < iAllowedDelta){
             makeFeature(aSegments[i], color);
         }
         
         // check for reverse direction
-        iTargetBearing = (iTargetBearing + 180) % 360;
-        if (Math.abs(iThisBearing - iTargetBearing) < iAllowedDelta){
+        var iReverseTargetBearing = (iTargetBearing + 180) % 360;
+        fits = Math.abs(iThisBearing - iReverseTargetBearing);
+        if (fits < iAllowedDelta){
             makeFeature(aSegments[i], color);
         }
     }
@@ -152,12 +154,15 @@ function recalculateSunBearing(){
     
     var sunrisePosition = SunCalc.getSunPosition(dayInfo.sunrise.start, oPosition.lat, oPosition.lng);
     sunriseAngle = _toDeg(sunrisePosition.azimuth - Math.PI);
+    sunriseAngle = (sunriseAngle + 360) % 360;
     var sunsetPosition = SunCalc.getSunPosition(dayInfo.sunset.start, oPosition.lat, oPosition.lng);
     sunsetAngle = _toDeg(sunsetPosition.azimuth - Math.PI);
+    sunsetAngle = (sunsetAngle + 360) % 360;
     $('#sunrise_bearing').html(sunriseAngle);
     $('#sunset_bearing').html(sunsetAngle);
     
     clearLayers();
+    console.log('go for', sunriseAngle, sunsetAngle)
     markBearing(sunriseAngle, 'blue');
     markBearing(sunsetAngle, 'red');
 }

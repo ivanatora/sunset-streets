@@ -13,7 +13,7 @@ L.tileLayer('https://a.tiles.mapbox.com/v3/sztanko.gjp73mna/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 
-map.setView([42.13, 24.75], 13);
+map.setView([42.145, 24.75], 13);
 //map.setView([42.67369, 23.28940], 13);
 
 // Add in a crosshair for the map
